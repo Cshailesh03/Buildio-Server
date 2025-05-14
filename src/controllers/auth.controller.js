@@ -1,10 +1,12 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import { google } from "googleapis";
 import crypto from "crypto";
 import { comparePassword } from "../services/auth.service.js"; // Correct import
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {
@@ -12,6 +14,8 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../config/jwt.js";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Nodemailer Transporter for sending emails
 const transporter = nodemailer.createTransport({
@@ -21,7 +25,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS || "rvqb tioa clrq yknl",
   },
 });
-
 
 // @desc Signup
 export const signup = asyncHandler(async (req, res) => {
@@ -181,3 +184,58 @@ export const resetPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, null, "Password reset successful"));
 });
 
+// // @desc Redirect to Google Login
+// export const googleAuthURL = asyncHandler(async (req, res) => {
+//   const url = client.generateAuthUrl({  // Changed oauth2Client to client
+//     access_type: "offline",
+//     scope: ["profile", "email"],
+//   });
+//   res.redirect(url);
+// });
+
+// // @desc Google OAuth Callback
+// export const googleOAuthCallback = asyncHandler(async (req, res) => {
+//   const { code } = req.query;
+
+//   const { tokens } = await client.getToken(code);  // Changed oauth2Client to client
+//   client.setCredentials(tokens);  // Changed oauth2Client to client
+
+//   const oauth2 = google.oauth2({
+//     auth: client,  // Changed oauth2Client to client
+//     version: "v2",
+//   });
+
+//   const { data } = await oauth2.userinfo.get();
+
+//   let user = await User.findOne({ email: data.email });
+//   if (!user) {
+//     user = await User.create({
+//       email: data.email,
+//       fullname: data.name,
+//       username: data.email.split("@")[0],
+//       passwordHash: "", // not needed
+//       isOAuth: true,
+//     });
+//   }
+
+//   const payload = {
+//     _id: user._id,
+//     email: user.email,
+//     username: user.username,
+//   };
+
+//   const accessToken = generateAccessToken(payload);
+//   const refreshToken = generateRefreshToken(payload);
+
+//   res.cookie("refreshToken", refreshToken, {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     sameSite: "Strict",
+//     maxAge: 7 * 24 * 60 * 60 * 1000,
+//   });
+
+//   // For local testing redirect to frontend with token (if needed)
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, { accessToken }, "Google OAuth login successful"));
+// });
