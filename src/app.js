@@ -13,7 +13,7 @@ import { errorMiddleware } from './middlewares/error.middleware.js';
 import pageRoutes from './routes/page.routes.js';
 import authRoutes from './routes/auth.routes.js';
 
-// import userRoutes from "./routes/user.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import siteRoutes from "./routes/site.routes.js";
 
 const app = express();
@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/templates', templateRoutes);
-// app.use("/api/users", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/sites", siteRoutes);
 app.use('/api/pages', pageRoutes);
 
