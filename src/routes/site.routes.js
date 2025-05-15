@@ -1,15 +1,21 @@
 import express from "express";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { authorizeRoles } from "../middlewares/role.middleware.js";
 import {
-createSite,
-getMySites,
+  createSite,
+  getUserSites,
+  getSiteById,
+  updateSite,
+  deleteSite,
 } from "../controllers/site.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.use(verifyJWT); // Protect all below routes
-router.post("/", authorizeRoles("creator", "admin"), createSite);
-router.get("/", getMySites);
+router.use(verifyJWT);
+
+router.post("/", createSite);
+router.get("/", getUserSites);
+router.get("/:id", getSiteById);
+router.put("/:id", updateSite);
+router.delete("/:id", deleteSite);
 
 export default router;
