@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import passport from "passport";
 import session from "express-session";
+import templateRoutes from "./routes/template.routes.js";
 import "./config/passport.js";
 import mediaRoutes from './routes/media.routes.js';
 import { errorMiddleware } from "./middlewares/error.middleware.js";
@@ -46,6 +47,7 @@ import authRoutes from "./routes/auth.routes.js";
 
 app.use("/api/auth", authRoutes);
 app.use('/api/media', mediaRoutes);
+app.use("/api/templates", templateRoutes);
 // app.use("/api/users", userRoutes);
 // app.use("/api/sites", siteRoutes);
 // app.use("/api/pages", pageRoutes);
