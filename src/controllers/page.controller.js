@@ -5,6 +5,8 @@ import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 
+import { renderLayoutToHTMLFile } from '../services/layoutRenderer.service.js';
+
 // CREATE PAGE
 export const createPage = asyncHandler(async (req, res) => {
 const { name, siteId, path, layout } = req.body;
@@ -35,6 +37,8 @@ const page = await Page.create({
   layout,
   userId 
 });
+
+await renderLayoutToHTMLFile(layout, `${page._id}.html`);
 
 
 return res.status(201).json(
@@ -103,3 +107,5 @@ return res
 .status(200)
 .json(new ApiResponse(200, null, "Page deleted successfully"));
 });
+
+

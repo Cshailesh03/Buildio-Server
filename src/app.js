@@ -37,6 +37,12 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Allow requests from your frontend
+    credentials: true, // Allow cookies and credentials
+  })
+);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
