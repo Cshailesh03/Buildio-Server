@@ -14,16 +14,46 @@ export const getMyProfile = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError(404, "User not found");
   return res.status(200).json(new ApiResponse(200, user));
 });
+import { uploadToCloudinary } from "../services/cloudinary.service.js";
 
-// PUT /api/user/update
+
+// update username and add profile Pic
 export const updateProfile = asyncHandler(async (req, res) => {
   const { fullname } = req.body;
+  const updateFields = {};
+
+  if (fullname) {
+    updateFields.fullname = fullname;
+  }
+
+  if (req.file) {
+    try {
+      const uploadResult = await uploadToCloudinary(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        "profilePics"
+      );
+      updateFields.profilePic = uploadResult.secure_url;
+      updateFields.profilePicPublicId = uploadResult.public_id;
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload profile picture");
+    }
+  }
+
+  if (Object.keys(updateFields).length === 0) {
+    throw new ApiError(400, "No valid fields provided for update");
+  }
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
-    { fullname },
+    updateFields,
     { new: true, runValidators: true }
   ).select("-passwordHash");
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
 
   return res.status(200).json(new ApiResponse(200, updatedUser, "Profile updated"));
 });

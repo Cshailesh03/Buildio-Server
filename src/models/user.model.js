@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      // index: true,
     },
     email: {
       type: String,
@@ -24,39 +23,37 @@ const userSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
-
-    // Use passwordHash internally and not expose 'password' field directly
     passwordHash: {
       type: String,
       select: false,
     },
 
-    // avatar: {
-    //   type: String, 
-    //   default: "",
-    // },
+    profilePic: {
+      type: String,
+      default: "",
+    },
+    profilePicPublicId: {
+      type: String,
+      default: null,
+    },
 
     oauthProvider: {
       type: String,
       enum: ["google", "facebook", "github"],
       default: null,
     },
-
     oauthId: {
       type: String,
       default: null,
     },
-
     resetPasswordToken: {
       type: String,
       select: false,
     },
-
     resetPasswordExpires: {
       type: Date,
       select: false,
     },
-
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -67,7 +64,7 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: {
       virtuals: true,
-      transform: function (doc, ret) {
+      transform(doc, ret) {
         delete ret.passwordHash;
         delete ret.resetPasswordToken;
         delete ret.resetPasswordExpires;
@@ -77,8 +74,6 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
-// userSchema.index({ email: 1 });
 
 const User = mongoose.model("User", userSchema);
 export { User };
