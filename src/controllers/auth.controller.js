@@ -1,9 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { google } from "googleapis";
 import crypto from "crypto";
 import { comparePassword } from "../services/auth.service.js"; // Correct import
-import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { OAuth2Client } from "google-auth-library";
